@@ -65,7 +65,7 @@ def send_mail(payload: SecretSanta):
             message = EmailMessage()
 
             message["From"] = email
-            message["To"] = payload.secretList["secretSanta"]
+            message["To"] = payload.secretList[index]["secretSanta"]
             message["Subject"] = subject
 
             # now create a Content-ID for the image
@@ -115,7 +115,7 @@ def send_mail(payload: SecretSanta):
                     cid=f"<{cid}>")
 
             # Open connection with smtp.gmail.com server at port 587
-            with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            with smtplib.SMTP(Settings.SERVER_NAME, Settings.SERVER_PORT) as server:
                 server.starttls()
                 server.login(email, password)
                 result = server.send_message(message)
