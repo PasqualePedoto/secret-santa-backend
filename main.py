@@ -12,6 +12,8 @@ import base64
 import mimetypes
 import imghdr
 
+from schemas import SecretSanta
+
 
 app = FastAPI()
 
@@ -20,8 +22,12 @@ app = FastAPI()
 def read_root():
     return {"STATUS": "Send mail server is running"}
 
-@app.get("/sendMail")
-def send_mail():
+@app.post("/sendMail")
+def send_mail(payload: SecretSanta):
+
+    if not payload.secretList:
+        raise Exception
+
     # from email.mime.multipart import MIMEMultipart
     # from email.mime.base import MIMEBase
     # import smtplib
