@@ -1,1 +1,8 @@
 .env 
+# File di cache di Python
+__pycache__/
+
+# Byte-compiled / optimized files
+*.pyc
+*.pyo
+*.pyd
