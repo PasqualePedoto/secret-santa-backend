@@ -13,10 +13,24 @@ import mimetypes
 import imghdr
 
 from schemas import SecretSanta
+from config import Settings
 from Exceptions import ParsingErrorExceptions, ValidationErrorExceptions, SendMailException
-
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:8010",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/healthychecker")
@@ -39,64 +53,11 @@ def send_mail(payload: SecretSanta):
                 error_code=403, 
                 error_message="Validation error: modify payload and retry"
                 )
-        
 
-        # from email.mime.multipart import MIMEMultipart
-        # from email.mime.base import MIMEBase
-        # import smtplib
-        # import base64
-        # from email import encoders
-        # from email.header import Header
-        #
-        # sender_email = "pasquale.pedoto123@gmail.com"
-        # receiver_email = "pasquale.pedoto123@gmail.com"
-        # password = "hzldjaotjvutdrbi"
-        #
-        # message = MIMEMultipart()
-        # message["From"] = str(Header('HD+ monitoring <%s>' % sender_email))
-        # message["To"] = receiver_email
-        # message["Subject"] = "'HD+ monitoring - Check video"
-        #
-        # message.attach(MIMEText("""
-        #     <html>
-        #     <body>
-        #     Hi,
-        #     <br>>
-        #     Do not respond to this email as it is dynamically generated.
-        #     <br>
-        #     Running the test on streaming control detected presence of DRM,
-        #     so we find it impossible to check for the presence of black-screen,
-        #     freeze etc using our machine learning services.
-        #     <div style="height=10px"></div>
-        #     <div style="height=10px"></div>
-        #     <p>Attached is a recording of the streaming.</p>
-        #     <b> IT Automation TEAM </b><br>
-        #     </html>
-        #     </body>"""
-        #                         , "html"))
-        #
-        # video_allegato = MIMEBase("application", "octet-stream")
-        # video_allegato.set_payload(open(file_url_uploaded, "rb").read())
-        # encoders.encode_base64(video_allegato)
-        # video_allegato.add_header(
-        #     "Content-Disposition", f"attachment; filename={os.path.basename(file_url_uploaded)}"
-        # )
-        # message.attach(video_allegato)
-        #
-        # with smtplib.SMTP('smtp.gmail.com', 587) as server:
-        #     server.starttls()
-        #     server.login(sender_email, password)
-        #     server.send_message(message)
-        #
-        # return {
-        #     "status": "email inviata"
-        # }
-
-        email = "pasquale.pedoto123@gmail.com"
-        password = "hzldjaotjvutdrbi"
+        email = Settings.EMAIL
+        password = Settings.PASSWORD
 
         subject = "SECRET SANTA"
-        body = "Pippo"
 
         message = EmailMessage()
 
