@@ -53,67 +53,75 @@ def send_mail(payload: SecretSanta):
                 error_message="Validation error: modify payload and retry"
                 )
 
+        # Define email and password of secret santa managment
         email = Settings.EMAIL
         password = Settings.PASSWORD
 
-        subject = "SECRET SANTA"
+        for index in range(len(payload.secretList)):
 
-        message = EmailMessage()
+            # mail subject
+            subject = "SECRET SANTA"
 
-        message["From"] = email
-        message["To"] = "pasquale.pedoto123@gmail.com"
-        message["Subject"] = subject
+            message = EmailMessage()
 
-        # now create a Content-ID for the image
-        cid = make_msgid()[1:-1]
-        # if `domain` argument isn't provided, it will 
-        # use your computer's name
+            message["From"] = email
+            message["To"] = payload.secretList["secretSanta"]
+            message["Subject"] = subject
 
-        # set an alternative html body
-        message.set_content("""\
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <title>Document</title>
-            </head>
-            <body>
-                <div>
-                <p>Oh oh oh 'tizio',</p>
-                <p>Il Natale è alle porte e Babbo Natale ha bisogno di te!</p>
-                <p>Sarai il Secret Santa di:</p>
-                <div style="height: 20px"></div>
-                <p></p>
-                </div>
-                <figure>
-                <img src="cid:{image_cid}" alt="receiver-secret-santa" style="width: 100%" />
-                </figure>
-            </body>
-            </html>
-        """.format(image_cid=cid), subtype="html")
+            # now create a Content-ID for the image
+            cid = make_msgid()[1:-1]
 
-        file_path = '/Users/pasqualepedoto/Downloads/images.jpeg'
-        extends = imghdr.what(file_path)
+            # set an html body
+            message.set_content("""\
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <title>Document</title>
+                </head>
+                <body>
+                    <div>
+                    <p>Oh oh oh 'tizio',</p>
+                    <p>Il Natale è alle porte e Babbo Natale ha bisogno di te!</p>
+                    <p>Sarai il Secret Santa di:</p>
+                    <div style="height: 20px"></div>
+                    <p></p>
+                    </div>
+                    <figure>
+                    <img src="cid:{image_cid}" alt="receiver-secret-santa" style="width: 100%" />
+                    </figure>
+                </body>
+                </html>
+            """.format(image_cid=cid), subtype="html")
 
-        maintype = ""
-        if file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
-            maintype = "image"
-        
-        with open(file_path, "rb") as img:
-            message.add_related(
-                img.read(), 
-                maintype=maintype, 
-                subtype=extends, 
-                cid=f"<{cid}>")
+            file_path = '/Users/pasqualepedoto/Downloads/images.jpeg'
 
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()
-            server.login(email, password)
-            server.send_message(message)
+            extends = imghdr.what(file_path)
+            maintype = ""
+            if file_path.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
+                maintype = "image"
+            
+            # Add image into the email
+            with open(file_path, "rb") as img:
+                message.add_related(
+                    # Read image
+                    img.read(), 
+                    # Define file type
+                    maintype=maintype, 
+                    # Define file extends
+                    subtype=extends, 
+                    # Add content-id define precently
+                    cid=f"<{cid}>")
 
-        response["status"] = 200
-        response["message"] = "Email inviata con successo"
+            # Open connection with smtp.gmail.com server at port 587
+            with smtplib.SMTP('smtp.gmail.com', 587) as server:
+                server.starttls()
+                server.login(email, password)
+                result = server.send_message(message)
+
+            response["status"] = 200
+            response["message"] = "Email inviata con successo"
     
     except ParsingErrorExceptions as exc:
         response["error_code"] = exc.error_code
