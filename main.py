@@ -13,15 +13,13 @@ import mimetypes
 import imghdr
 
 from schemas import SecretSanta
-from config import Settings
+from config import settings
 from Exceptions import ParsingErrorExceptions, ValidationErrorExceptions, SendMailException
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:8010",
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,25 +37,30 @@ def read_root():
 @app.post("/sendMail")
 def send_mail(payload: SecretSanta):
     response = dict()
-
+    
     try:
-        if not payload.secretList:
+        if not payload.secretSanta:
             raise ParsingErrorExceptions(
                 error_code=400, 
                 error_message="Parsing error: modify payload and retry"
                 )
     
-        if not isinstance(payload.secretList, list):
+        if not isinstance(payload.secretSanta, list):
             raise ValidationErrorExceptions(
                 error_code=403, 
                 error_message="Validation error: modify payload and retry"
                 )
+        
+        print(payload.secretSanta)
 
         # Define email and password of secret santa managment
-        email = Settings.EMAIL
-        password = Settings.PASSWORD
+        email = str(settings.EMAIL)
+        password = str(settings.PASSWORD)
 
-        for index in range(len(payload.secretList)):
+        for index in range(len(payload.secretSanta)):
+            print("EMAIL: " + payload.secretSanta[index]["sender"]["email"])
+            print("NOME: " + payload.secretSanta[index]["sender"]["name"])
+            print("EMAIL DEL SENDER: " + str(settings.EMAIL))
 
             # mail subject
             subject = "SECRET SANTA"
@@ -65,7 +68,7 @@ def send_mail(payload: SecretSanta):
             message = EmailMessage()
 
             message["From"] = email
-            message["To"] = payload.secretList[index]["secretSanta"]
+            message["To"] = payload.secretSanta[index]["sender"]["email"]
             message["Subject"] = subject
 
             # now create a Content-ID for the image
@@ -82,7 +85,7 @@ def send_mail(payload: SecretSanta):
                 </head>
                 <body>
                     <div>
-                    <p>Oh oh oh 'tizio',</p>
+                    <p>Oh oh oh """ + payload.secretSanta[index]["sender"]["name"] + """,</p>
                     <p>Il Natale è alle porte e Babbo Natale ha bisogno di te!</p>
                     <p>Sarai il Secret Santa di:</p>
                     <div style="height: 20px"></div>
@@ -115,7 +118,7 @@ def send_mail(payload: SecretSanta):
                     cid=f"<{cid}>")
 
             # Open connection with smtp.gmail.com server at port 587
-            with smtplib.SMTP(Settings.SERVER_NAME, Settings.SERVER_PORT) as server:
+            with smtplib.SMTP(str(settings.SERVER_NAME), int(settings.SERVER_PORT)) as server:
                 server.starttls()
                 server.login(email, password)
                 result = server.send_message(message)
