@@ -1,6 +1,6 @@
 .env 
 # File di cache di Python
-__pycache__/
+__pycache__
 
 # Byte-compiled / optimized files
 *.pyc

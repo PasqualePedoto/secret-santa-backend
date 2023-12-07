@@ -11,6 +11,7 @@ import smtplib
 import base64
 import mimetypes
 import imghdr
+import os
 
 from schemas import SecretSanta
 from config import settings
@@ -98,7 +99,10 @@ def send_mail(payload: SecretSanta):
                 </html>
             """.format(image_cid=cid), subtype="html")
 
-            file_path = '/Users/pasqualepedoto/Downloads/images.jpeg'
+            name_to_search = payload.secretSanta[index]["sender"]["name"].lower().capitalize() + payload.secretSanta[index]["sender"]["surname"].lower().capitalize()
+            file_path = os.path.join(os.path.join(os.getcwd(), "images"), "placeholder.jpeg")
+            if os.path.exists(os.path.join(os.path.join(os.getcwd(), "images"), name_to_search + ".jpeg")):
+                file_path = os.path.join(os.path.join(os.getcwd(), "images"), name_to_search + ".jpeg")
 
             extends = imghdr.what(file_path)
             maintype = ""
