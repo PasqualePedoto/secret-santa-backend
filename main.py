@@ -51,8 +51,6 @@ def send_mail(payload: SecretSanta):
                 error_code=403, 
                 error_message="Validation error: modify payload and retry"
                 )
-        
-        print(payload.secretSanta)
 
         # Define email and password of secret santa managment
         email = str(settings.EMAIL)
@@ -99,7 +97,7 @@ def send_mail(payload: SecretSanta):
                 </html>
             """.format(image_cid=cid), subtype="html")
 
-            name_to_search = payload.secretSanta[index]["sender"]["name"].lower().capitalize() + payload.secretSanta[index]["sender"]["surname"].lower().capitalize()
+            name_to_search = payload.secretSanta[index]["received"]["name"].lower().capitalize() + payload.secretSanta[index]["received"]["surname"].lower().capitalize()
             file_path = os.path.join(os.path.join(os.getcwd(), "images"), "placeholder.jpeg")
             if os.path.exists(os.path.join(os.path.join(os.getcwd(), "images"), name_to_search + ".jpeg")):
                 file_path = os.path.join(os.path.join(os.getcwd(), "images"), name_to_search + ".jpeg")
