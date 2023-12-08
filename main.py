@@ -73,6 +73,11 @@ def send_mail(payload: SecretSanta):
             # now create a Content-ID for the image
             cid = make_msgid()[1:-1]
 
+            name_to_search = payload.secretSanta[index]["received"]["name"].lower().capitalize() + payload.secretSanta[index]["received"]["surname"].lower().capitalize()
+            file_path = os.path.join(os.path.join(os.getcwd(), "images"), "placeholder.jpeg")
+            if os.path.exists(os.path.join(os.path.join(os.getcwd(), "images"), name_to_search + ".jpeg")):
+                file_path = os.path.join(os.path.join(os.getcwd(), "images"), name_to_search + ".jpeg")
+
             # set an html body
             message.set_content("""\
                 <!DOCTYPE html>
@@ -88,7 +93,7 @@ def send_mail(payload: SecretSanta):
                     <p>Il Natale è alle porte e Babbo Natale ha bisogno di te!</p>
                     <p>Sarai il Secret Santa di:</p>
                     <div style="height: 20px"></div>
-                    <p></p>
+                    <p style="display: flex; justify-content: center; margin: 20px 0px">""" + payload.secretSanta[index]["received"]["name"].lower().capitalize() + """ """ + payload.secretSanta[index]["received"]["surname"].lower().capitalize() + """</p>
                     </div>
                     <figure>
                     <img src="cid:{image_cid}" alt="receiver-secret-santa" style="width: 100%" />
@@ -96,11 +101,6 @@ def send_mail(payload: SecretSanta):
                 </body>
                 </html>
             """.format(image_cid=cid), subtype="html")
-
-            name_to_search = payload.secretSanta[index]["received"]["name"].lower().capitalize() + payload.secretSanta[index]["received"]["surname"].lower().capitalize()
-            file_path = os.path.join(os.path.join(os.getcwd(), "images"), "placeholder.jpeg")
-            if os.path.exists(os.path.join(os.path.join(os.getcwd(), "images"), name_to_search + ".jpeg")):
-                file_path = os.path.join(os.path.join(os.getcwd(), "images"), name_to_search + ".jpeg")
 
             extends = imghdr.what(file_path)
             maintype = ""

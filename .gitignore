@@ -3,6 +3,7 @@
 __pycache__
 /images
 # Byte-compiled / optimized files
+.DS_Store
 *.pyc
 *.pyo
 *.pyd
