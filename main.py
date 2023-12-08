@@ -93,7 +93,7 @@ def send_mail(payload: SecretSanta):
                     <p>Il Natale è alle porte e Babbo Natale ha bisogno di te!</p>
                     <p>Sarai il Secret Santa di:</p>
                     <div style="height: 20px"></div>
-                    <p style="display: flex; justify-content: center; margin: 20px 0px">""" + payload.secretSanta[index]["received"]["name"].lower().capitalize() + """ """ + payload.secretSanta[index]["received"]["surname"].lower().capitalize() + """</p>
+                    <p style="display: flex; justify-content: center; margin: 20px 0px; width: 100%">""" + payload.secretSanta[index]["received"]["name"].lower().capitalize() + """ """ + payload.secretSanta[index]["received"]["surname"].lower().capitalize() + """</p>
                     </div>
                     <figure>
                     <img src="cid:{image_cid}" alt="receiver-secret-santa" style="width: 100%" />
